@@ -33,6 +33,7 @@ from ...utility.drawing.view import mouse_2d_to_3d
 from ...utility.drawing.tool_tip import build_tooltips
 from ...utility.jdraw.core import JDraw_Text_Box_Multi, JDraw_Text
 
+from ...utility.shader_utils import get_builtin_shader
 
 theme = bpy.context.preferences.themes[0]
 B_ui = theme.user_interface
@@ -606,7 +607,7 @@ class MB_OT_ALIGN_FACE(Operator):
         coors = [v.co for v in self.rot_edge]
         world_coors = coors_loc_to_world(coors, self.obj)
 
-        shader_moving_lines = gpu.shader.from_builtin('3D_UNIFORM_COLOR')
+        shader_moving_lines = gpu.shader.from_builtin(get_builtin_shader())
         batch_moving_lines = batch_for_shader(shader_moving_lines, 'LINES', {"pos": world_coors})
 
         shader_moving_lines.bind()
@@ -680,6 +681,7 @@ class MB_OT_ALIGN_FACE(Operator):
 
         textbox = JDraw_Text_Box_Multi(x=self.mouse_loc[0]+15, y=self.mouse_loc[1]-15, strings=texts, size=15)
         textbox.draw()
+        boxheight = abs(textbox.box.height)
 
         tool_header = JDraw_Text(x=self.mouse_loc[0]+20, y=self.mouse_loc[1]+0, string="Align Face", size=18)
         tool_header.draw()
@@ -692,10 +694,12 @@ class MB_OT_ALIGN_FACE(Operator):
 
         # texts.append("")
 
-        textbox = JDraw_Text_Box_Multi(x=self.mouse_loc[0]+15, y=self.mouse_loc[1]-230, strings=texts, size=12)
+        # textbox = JDraw_Text_Box_Multi(x=self.mouse_loc[0]+15, y=self.mouse_loc[1]-230, strings=texts, size=12)
+        textbox = JDraw_Text_Box_Multi(x=self.mouse_loc[0]+15, y=self.mouse_loc[1]-boxheight-15-30, strings=texts, size=12)
         textbox.draw()
 
-        tool_header = JDraw_Text(x=self.mouse_loc[0]+20, y=self.mouse_loc[1]-220, string="angle quick adjust", size=13)
+        # tool_header = JDraw_Text(x=self.mouse_loc[0]+20, y=self.mouse_loc[1]-220, string="angle quick adjust", size=13)
+        tool_header = JDraw_Text(x=self.mouse_loc[0]+20, y=self.mouse_loc[1]-boxheight-15-20, string="angle quick adjust", size=13)
         tool_header.draw()
 
         # --------------------------------------------------

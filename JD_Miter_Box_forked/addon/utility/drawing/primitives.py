@@ -7,6 +7,7 @@ from mathutils import Vector
 
 from ..math import rotate_to_space, rotate_point_around_axis
 
+from ..shader_utils import get_builtin_shader, get_builtin_shader_2d
 
 def plane_center(location, axis_x, axis_y, axis_z, size_x, size_y, color):
     # TRIS
@@ -27,7 +28,7 @@ def plane_center(location, axis_x, axis_y, axis_z, size_x, size_y, color):
     for vec in positions:
         vec += location
 
-    shader = gpu.shader.from_builtin('3D_UNIFORM_COLOR')
+    shader = gpu.shader.from_builtin(get_builtin_shader())
     batch = batch_for_shader(shader, 'TRIS', {"pos": positions}, indices=indices)
 
     shader.bind()
@@ -49,7 +50,7 @@ def line(location, axis_x, axis_y, axis_z, length, thickness, color):
         for vec in world_coors:
             vec += location
 
-        shader_moving_lines = gpu.shader.from_builtin('3D_UNIFORM_COLOR')
+        shader_moving_lines = gpu.shader.from_builtin(get_builtin_shader())
         batch_moving_lines = batch_for_shader(shader_moving_lines, 'LINES', {"pos": world_coors})
 
         shader_moving_lines.bind()
@@ -65,7 +66,7 @@ def line_p2p(start, end, thickness, color):
 
     coors = [start, end]
 
-    shader_line = gpu.shader.from_builtin('3D_UNIFORM_COLOR')
+    shader_line = gpu.shader.from_builtin(get_builtin_shader())
     batch_line = batch_for_shader(shader_line, 'LINES', {"pos": coors})
 
     shader_line.bind()
@@ -80,7 +81,7 @@ def lines_p2p(coor_pairs, thickness, color):
 # LINES
     gpu.state.line_width_set(thickness)
 
-    shader_line = gpu.shader.from_builtin('3D_UNIFORM_COLOR')
+    shader_line = gpu.shader.from_builtin(get_builtin_shader())
     batch_line = batch_for_shader(shader_line, 'LINES', {"pos": coor_pairs})
 
     shader_line.bind()
@@ -97,7 +98,7 @@ def line_2d(start, end, thickness, color):
 
         world_coors = [start, end]
 
-        shader_line = gpu.shader.from_builtin('2D_UNIFORM_COLOR')
+        shader_line = gpu.shader.from_builtin(get_builtin_shader_2d())
         batch_line = batch_for_shader(shader_line, 'LINES', {"pos": world_coors})
 
         shader_line.bind()
@@ -111,7 +112,7 @@ def edges(locations, thickness, color):
 
     gpu.state.line_width_set(thickness)
 
-    shader_moving_lines = gpu.shader.from_builtin('3D_UNIFORM_COLOR')
+    shader_moving_lines = gpu.shader.from_builtin(get_builtin_shader())
     batch_moving_lines = batch_for_shader(shader_moving_lines, 'LINES', {"pos": locations})
 
     shader_moving_lines.bind()
@@ -125,7 +126,7 @@ def points(locations, size, color):
 
     gpu.state.point_size_set(size)
 
-    shader_dots = gpu.shader.from_builtin('3D_UNIFORM_COLOR')
+    shader_dots = gpu.shader.from_builtin(get_builtin_shader())
     batch_dots = batch_for_shader(shader_dots, 'POINTS', {"pos": locations})
 
     shader_dots.bind()
@@ -157,7 +158,7 @@ def arc(center, axis_x, axis_y, axis_z, radius, angle, thickness, color):
         for vec in world_coors:
             vec += center
 
-        shader_arc = gpu.shader.from_builtin('3D_UNIFORM_COLOR')
+        shader_arc = gpu.shader.from_builtin(get_builtin_shader())
         batch_arc = batch_for_shader(shader_arc, 'LINE_STRIP', {"pos": world_coors})
 
         shader_arc.bind()

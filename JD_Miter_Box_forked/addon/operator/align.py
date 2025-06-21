@@ -18,6 +18,7 @@ from mathutils.geometry import intersect_line_line
 
 from ..utility.mesh import vert_pair_other_vert, coor_loc_to_world, coors_loc_to_world
 
+from ..utility.shader_utils import get_builtin_shader
 
 Align_kb_general = {'mode' :
     {'key':'V', 'desc':"Mode", 'var':'mode'},
@@ -421,7 +422,7 @@ class MB_OT_ALIGN(Operator):
         coors = [vert.co for vert in self.edge_active]
         world_coors = coors_loc_to_world(coors, self.obj)
 
-        shader = gpu.shader.from_builtin('3D_UNIFORM_COLOR')
+        shader = gpu.shader.from_builtin(get_builtin_shader())
         batch = batch_for_shader(shader, 'LINES', {"pos": world_coors})
 
         shader.bind()
@@ -436,7 +437,7 @@ class MB_OT_ALIGN(Operator):
         coors = [vert.co for vert in self.edge_selected]
         world_coors = coors_loc_to_world(coors, self.obj)
 
-        shader_active = gpu.shader.from_builtin('3D_UNIFORM_COLOR')
+        shader_active = gpu.shader.from_builtin(get_builtin_shader())
         batch_active = batch_for_shader(shader_active, 'LINES', {"pos": world_coors})
 
         shader_active.bind()
@@ -451,7 +452,7 @@ class MB_OT_ALIGN(Operator):
 
         world_coors = coor_loc_to_world(self.closest_active_vert.co, self.obj)
 
-        shader_dots = gpu.shader.from_builtin('3D_UNIFORM_COLOR')
+        shader_dots = gpu.shader.from_builtin(get_builtin_shader())
         batch_dots = batch_for_shader(shader_dots, 'POINTS', {"pos": [world_coors]})
 
         shader_dots.bind()
@@ -468,7 +469,7 @@ class MB_OT_ALIGN(Operator):
             world_coors = coors_loc_to_world(self.moving_lines, self.obj)
 
 
-            shader_moving_lines = gpu.shader.from_builtin('3D_UNIFORM_COLOR')
+            shader_moving_lines = gpu.shader.from_builtin(get_builtin_shader())
             batch_moving_lines = batch_for_shader(shader_moving_lines, 'LINES', {"pos": world_coors})
 
             shader_moving_lines.bind()
@@ -483,7 +484,7 @@ class MB_OT_ALIGN(Operator):
 
             world_coors = coors_loc_to_world(self.guide_edge, self.obj)
 
-            shader_moving_lines = gpu.shader.from_builtin('3D_UNIFORM_COLOR')
+            shader_moving_lines = gpu.shader.from_builtin(get_builtin_shader())
             batch_moving_lines = batch_for_shader(shader_moving_lines, 'LINES', {"pos": world_coors})
 
             shader_moving_lines.bind()
@@ -500,7 +501,7 @@ class MB_OT_ALIGN(Operator):
 
             world_coors = coors_loc_to_world(self.new_edge, self.obj)
 
-            shader_moving_lines = gpu.shader.from_builtin('3D_UNIFORM_COLOR')
+            shader_moving_lines = gpu.shader.from_builtin(get_builtin_shader())
             batch_moving_lines = batch_for_shader(shader_moving_lines, 'LINES', {"pos": world_coors})
 
             shader_moving_lines.bind()
@@ -515,7 +516,7 @@ class MB_OT_ALIGN(Operator):
 
             gpu.state.point_size_set(10)
 
-            shader_dots = gpu.shader.from_builtin('3D_UNIFORM_COLOR')
+            shader_dots = gpu.shader.from_builtin(get_builtin_shader())
             batch_dots = batch_for_shader(shader_dots, 'POINTS', {"pos": [world_coors]})
 
             shader_dots.bind()

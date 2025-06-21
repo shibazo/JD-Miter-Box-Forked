@@ -1,7 +1,7 @@
 import bpy
 
 
-addon_name = __name__.partition('.')[0]
+addon_name = None
 
 
 def get_prefs():

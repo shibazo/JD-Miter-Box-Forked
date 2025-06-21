@@ -1,3 +1,11 @@
+# Miter Box Fork
+This is a fork of Miter Box.<br />
+The Original addon is here:<br />
+https://github.com/JohnKazucki/JD-Miter-Box<br />
+
+# Abount change from original addon<br />
+Updated use GPU module instead of BGL module.<br /><br /><br />
+
 # Miter Box
 
 MB is a set of tools designed to make accurate polymodelling quicker and easier. <br />
