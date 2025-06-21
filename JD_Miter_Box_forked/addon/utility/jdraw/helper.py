@@ -1,7 +1,7 @@
 import bpy, blf, gpu
-from bgl import *
 from gpu_extras.batch import batch_for_shader
 
+from ..shader_utils import get_builtin_shader, get_builtin_shader_2d
 
 # --- PRIMITIVE DRAWING
 
@@ -34,13 +34,13 @@ def draw_quad(vertices=[], color=(1,1,1,1)):
     '''Vertices = Top Left, Bottom Left, Top Right, Bottom Right'''
 
     indices = [(0, 1, 2), (1, 2, 3)]
-    shader = gpu.shader.from_builtin('2D_UNIFORM_COLOR')
+    shader = gpu.shader.from_builtin(get_builtin_shader_2d())
     batch = batch_for_shader(shader, 'TRIS', {"pos": vertices}, indices=indices)
     shader.bind()
     shader.uniform_float("color", color)
-    glEnable(GL_BLEND)
+    gpu.state.blend_set("ALPHA")
     batch.draw(shader)
-    glDisable(GL_BLEND)
+    gpu.state.blend_set("NONE")
 
     del shader
     del batch

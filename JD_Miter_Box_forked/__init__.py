@@ -11,16 +11,22 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+import bpy
+from .addon.utility import addon
+
 bl_info = {
-    "name" : "Miter Box",
-    "author" : "João Desager",
+    "name" : "Miter Box (Forked)",
+    "author" : "João Desager / (Shibazo)",
     "description" : "Collection of Mesh Editing tools",
     "blender" : (3, 3, 4),
-    "version" : (0, 0, 5),
+    "version" : (0, 0, 6),
     "location" : "Edit Mode > Context Menu > MiterBox, N Panel > MB",
     "warning" : "",
-    "category" : "Generic"
+    "category" : "Generic",
+    "tagline" : "Forked and updated for Blender 4.x"
 }
+
+addon.addon_name = __name__
 
 def register():
     from .addon.register import register_addon

@@ -1,5 +1,4 @@
 import bpy, blf, gpu
-from bgl import *
 from gpu_extras.batch import batch_for_shader
 
 from .helper import make_vertices, draw_quad
@@ -70,7 +69,13 @@ class JDraw_Text(JDraw_UI):
 
     # from ST3 course part 5-8
     def draw(self):
-        blf.size(self.font, self.fontsize, int(self.dpi))
+        major, minor, _ = bpy.app.version
+        if (major, minor) < (4, 0):
+            blf.size(self.font, self.fontsize, int(self.dpi))
+        else:
+            blf.size(self.font, self.fontsize)
+            # DPI 補正係数（経験的に調整）
+
         blf.color(self.font, *self.color)
         blf.position(self.font, self.x, self.y, 0)
 
@@ -89,8 +94,11 @@ class JDraw_Text(JDraw_UI):
     @property #getter
     def size(self):
         '''Return the dimensions of the string'''
-
-        blf.size(0, self.fontsize, self.dpi)
+        major, minor, _ = bpy.app.version
+        if (major, minor) < (4, 0):
+            blf.size(0, self.fontsize, self.dpi)
+        else:
+            blf.size(0, self.fontsize)
         return blf.dimensions(0, str(self.string))
 
 
