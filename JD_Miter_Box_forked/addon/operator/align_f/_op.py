@@ -679,11 +679,13 @@ class MB_OT_ALIGN_FACE(Operator):
         # snapping
         build_tooltips(self, Align_Face_kb_snapping, texts)
 
-        textbox = JDraw_Text_Box_Multi(x=self.mouse_loc[0]+15, y=self.mouse_loc[1]-15, strings=texts, size=15)
+        prefs = get_prefs()
+
+        textbox = JDraw_Text_Box_Multi(x=self.mouse_loc[0]+15, y=self.mouse_loc[1]-15, strings=texts, size=prefs.font.main_text_size, text_color=prefs.font.main_text_color)
         textbox.draw()
         boxheight = abs(textbox.box.height)
 
-        tool_header = JDraw_Text(x=self.mouse_loc[0]+20, y=self.mouse_loc[1]+0, string="Align Face", size=18)
+        tool_header = JDraw_Text(x=self.mouse_loc[0]+20, y=self.mouse_loc[1]+0, string="Align Face", size=prefs.font.main_text_size, color=prefs.font.main_text_color)
         tool_header.draw()
 
         
@@ -695,11 +697,11 @@ class MB_OT_ALIGN_FACE(Operator):
         # texts.append("")
 
         # textbox = JDraw_Text_Box_Multi(x=self.mouse_loc[0]+15, y=self.mouse_loc[1]-230, strings=texts, size=12)
-        textbox = JDraw_Text_Box_Multi(x=self.mouse_loc[0]+15, y=self.mouse_loc[1]-boxheight-15-30, strings=texts, size=12)
+        textbox = JDraw_Text_Box_Multi(x=self.mouse_loc[0]+15, y=self.mouse_loc[1]-boxheight-15-30, strings=texts, size=prefs.font.sub_text_size, text_color=prefs.font.sub_text_color)
         textbox.draw()
 
         # tool_header = JDraw_Text(x=self.mouse_loc[0]+20, y=self.mouse_loc[1]-220, string="angle quick adjust", size=13)
-        tool_header = JDraw_Text(x=self.mouse_loc[0]+20, y=self.mouse_loc[1]-boxheight-15-20, string="angle quick adjust", size=13)
+        tool_header = JDraw_Text(x=self.mouse_loc[0]+20, y=self.mouse_loc[1]-boxheight-15-20, string="angle quick adjust", size=prefs.font.sub_text_size, color=prefs.font.sub_text_color)
         tool_header.draw()
 
         # --------------------------------------------------
