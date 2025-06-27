@@ -63,4 +63,7 @@ def draw_font(prefs, layout):
 
         for prop, text in item.items():
             row = box.row()
-            row.prop(prefs.font, prop, text=text)       
+            # row.prop(prefs.font, prop, text=text)
+            col = row.column().split()
+            col.label(text=text)
+            col.prop(prefs.font, prop, text='')

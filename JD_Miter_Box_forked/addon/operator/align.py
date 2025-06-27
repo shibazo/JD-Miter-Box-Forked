@@ -560,7 +560,7 @@ class MB_OT_ALIGN(Operator):
 
         prefs = get_prefs()
 
-        textbox = JDraw_Text_Box_Multi(x=self.mouse_loc[0]+15, y=self.mouse_loc[1]-15, strings=texts, size=prefs.font.sub_text_size, text_color=prefs.font.sub_text_color)
+        textbox = JDraw_Text_Box_Multi(x=self.mouse_loc[0]+15, y=self.mouse_loc[1]-15, strings=texts, size=prefs.font.main_text_size, text_color=prefs.font.main_text_color)
         textbox.draw()
 
         tool_header = JDraw_Text(x=self.mouse_loc[0]+20, y=self.mouse_loc[1]+0, string="Align Edge", size=prefs.font.main_text_size, color=prefs.font.main_text_color)
