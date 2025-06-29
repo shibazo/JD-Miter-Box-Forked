@@ -117,8 +117,8 @@ class MB_OT_ALIGN(Operator):
 
     def modal(self, context, event):
 
-        # Free navigation
-        if event.type in ('MIDDLEMOUSE', 'WHEELUPMOUSE', 'WHEELDOWNMOUSE'):
+        # Free navigation (Mouse and NODF Device (3D Mouse))
+        if (event.type in ('MIDDLEMOUSE', 'WHEELUPMOUSE', 'WHEELDOWNMOUSE')) or (event.type.startswith("NDOF")):
             return {'PASS_THROUGH'}
 
         # Cancel

@@ -7,7 +7,8 @@ import gpu
 from gpu_extras.batch import batch_for_shader
 
 
-from mathutils import Vector
+from mathutils import Vector, Matrix
+import math
 
 from enum import Enum
 import traceback
@@ -221,10 +222,10 @@ class MB_OT_ALIGN_FACE(Operator):
 
     def modal(self, context, event):
 
-        # Free navigation
-        if event.type in ('MIDDLEMOUSE', 'WHEELUPMOUSE', 'WHEELDOWNMOUSE'):
+        # Free navigation (Mouse and NODF Device (3D Mouse))
+        if (event.type in ('MIDDLEMOUSE', 'WHEELUPMOUSE', 'WHEELDOWNMOUSE')) or (event.type.startswith("NDOF")):
             return {'PASS_THROUGH'}
-
+        
         # Cancel
         if event.type == 'RIGHTMOUSE' and event.value == 'PRESS':
             # not needed I think, but doesn't hurt to free the bmesh even if we didn't edit it
@@ -596,7 +597,43 @@ class MB_OT_ALIGN_FACE(Operator):
                 dir = normal_loc_to_world(self.face_normal, self.obj) * 0.1
                 start = mouse_2d_to_3d(context, self.mouse_loc)
             
+            # Display Normal Select Face.
             line_p2p(start, start+dir, 2, self.c_face_align_dir)
+
+            # Draw a circle aligned with the normal.(Face Aline Mode)
+            if self.align_mode == AlignModes.Face.name and self.face_normal and self.loc:
+                shader = gpu.shader.from_builtin(get_builtin_shader())
+                segments = 32
+                radius = 0.1
+
+                up = self.face_normal.normalized()
+                right = up.cross(Vector((0, 0, 1)))
+                if right.length == 0:
+                    right = Vector((1, 0, 0))
+                forward = up.cross(right).normalized()
+                right = up.cross(forward).normalized()
+
+                # Generate the center point and the points on the circumference of the circle.
+                center = self.loc
+                circle_points = [
+                    center + radius * (right * math.cos(i * math.tau / segments) + forward * math.sin(i * math.tau / segments))
+                    for i in range(segments + 1)
+                ]
+
+                # Fill Circle
+                fill_coords = [center] + circle_points
+                fill_indices = [(0, i, i + 1) for i in range(1, segments + 1)]
+
+                batch_fill = batch_for_shader(shader, 'TRIS', {"pos": fill_coords}, indices=fill_indices)
+                shader.bind()
+                shader.uniform_float("color", (1.0, 0.0, 0.0, 0.3))  # 半透明の赤
+                gpu.state.blend_set('ALPHA')
+                batch_fill.draw(shader)
+
+                # Border Circle
+                batch_border = batch_for_shader(shader, 'LINE_STRIP', {"pos": circle_points})
+                shader.uniform_float("color", (1.0, 0.0, 0.0, 1.0))  # 不透明な赤
+                batch_border.draw(shader)
 
             gpu.state.blend_set('NONE')
 
