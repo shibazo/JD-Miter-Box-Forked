@@ -142,7 +142,7 @@ class JDraw_Text_Box:
         
         self.padding = padding
         
-        self.text = JDraw_Text(x=x + padding, y=y + padding, string=string, size=size)
+        self.text = JDraw_Text(x=x + padding, y=y + padding, string=string, size=size, color=text_color)
         
         text_dims = self.text.size
         box_width = text_dims[0] + padding * 2
@@ -182,7 +182,7 @@ class JDraw_Text_Box_Multi:
 
         for index, string in enumerate(strings):
 
-            text = JDraw_Text(x=x + padding, y=y, string=string, size=size)
+            text = JDraw_Text(x=x + padding, y=y, string=string, size=size, color=text_color)
             sizeY = text.size[1]
             offsetY += sizeY
             

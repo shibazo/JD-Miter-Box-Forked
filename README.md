@@ -4,7 +4,9 @@ The Original addon is here:<br />
 https://github.com/JohnKazucki/JD-Miter-Box<br />
 
 # Abount change from original addon<br />
-Updated use GPU module instead of BGL module.<br /><br /><br />
+v0.0.6 Updated use GPU module instead of BGL module.<br />
+v0.0.7 Added Font size and color settings.
+<br /><br />
 
 # Miter Box
 

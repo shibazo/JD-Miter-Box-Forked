@@ -1,7 +1,7 @@
 schema_version = "1.0.0"
 id = "jd_miter_box_forked"
 name = "Miter Box (Forked)"
-version = "0.0.6"
+version = "0.0.7"
 tagline = "Forked and updated for Blender 4.x"
 maintainer = "João Desager / (Shibazo)"
 type = "add-on"
