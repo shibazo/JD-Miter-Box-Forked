@@ -19,7 +19,7 @@ bl_info = {
     "author" : "João Desager / (Shibazo)",
     "description" : "Collection of Mesh Editing tools",
     "blender" : (3, 3, 4),
-    "version" : (0, 0, 6),
+    "version" : (0, 0, 7),
     "location" : "Edit Mode > Context Menu > MiterBox, N Panel > MB",
     "warning" : "",
     "category" : "Generic",

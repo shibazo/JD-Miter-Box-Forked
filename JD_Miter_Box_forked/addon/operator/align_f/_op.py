@@ -695,11 +695,15 @@ class MB_OT_ALIGN_FACE(Operator):
         build_tooltips(self, Align_Face_kb_anglemod, texts, show_value=False)
 
         # texts.append("")
+        major, minor, patch = bpy.app.version
+        offset_v3 = 0
+        if (major == 3):
+            offset_v3 = 15
 
-        textbox = JDraw_Text_Box_Multi(x=self.mouse_loc[0]+15, y=self.mouse_loc[1]-boxheight - prefs.font.sub_text_size - 25, strings=texts, size=prefs.font.sub_text_size, text_color=prefs.font.sub_text_color)
+        textbox = JDraw_Text_Box_Multi(x=self.mouse_loc[0]+15, y=self.mouse_loc[1]-boxheight - prefs.font.sub_text_size - 30 - offset_v3, strings=texts, size=prefs.font.sub_text_size, text_color=prefs.font.sub_text_color)
         textbox.draw()
 
-        tool_header = JDraw_Text(x=self.mouse_loc[0]+20, y=self.mouse_loc[1]-boxheight - prefs.font.sub_text_size - 15, string="angle quick adjust", size=prefs.font.sub_text_size, color=prefs.font.sub_text_color)
+        tool_header = JDraw_Text(x=self.mouse_loc[0]+20, y=self.mouse_loc[1]-boxheight - prefs.font.sub_text_size - 20 - offset_v3, string="angle quick adjust", size=prefs.font.sub_text_size, color=prefs.font.sub_text_color)
         tool_header.draw()
 
         # --------------------------------------------------
