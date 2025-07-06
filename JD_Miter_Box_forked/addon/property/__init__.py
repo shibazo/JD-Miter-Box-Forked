@@ -3,6 +3,7 @@ import bpy
 from .drawing.color import BM_Color
 from .drawing.size import BM_Size
 from .drawing.font import BM_Font
+from .drawing.options import BM_Options
 from .addon import BM_Props
 
 # register BM_Props last!
@@ -10,6 +11,7 @@ classes = (
     BM_Color,
     BM_Size,
     BM_Font,
+    BM_Options,
     BM_Props,
 )
 

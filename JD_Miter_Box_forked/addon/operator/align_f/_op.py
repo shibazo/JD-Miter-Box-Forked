@@ -188,8 +188,8 @@ class MB_OT_ALIGN_FACE(Operator):
 
         self.s_vertex = prefs.size.s_vertex
 
-
-        self.c_face_align_dir = self.c_selected_geo_sec
+        self.c_face_align_dir = prefs.options.normal_color
+        self.c_face_align_dir_org = self.c_face_align_dir
         
     def setup_input(self):
         # input management variables
@@ -429,7 +429,7 @@ class MB_OT_ALIGN_FACE(Operator):
                 face_normal = normal_world_to_loc(face_normal, self.obj)
             self.loc = loc
 
-            self.c_face_align_dir = self.c_selected_geo_sec
+            self.c_face_align_dir = self.c_face_align_dir_org
 
             # if aligning to object/world axis            
             axis_normal = self.update_input_Face_Align_Axis()
@@ -597,43 +597,45 @@ class MB_OT_ALIGN_FACE(Operator):
                 dir = normal_loc_to_world(self.face_normal, self.obj) * 0.1
                 start = mouse_2d_to_3d(context, self.mouse_loc)
             
-            # Display Normal Select Face.
-            line_p2p(start, start+dir, 2, self.c_face_align_dir)
+            prefs = get_prefs()
+            line_p2p(start, start+dir, prefs.options.normal_size, self.c_face_align_dir)
 
             # Draw a circle aligned with the normal.(Face Aline Mode)
-            if self.align_mode == AlignModes.Face.name and self.face_normal and self.loc:
-                shader = gpu.shader.from_builtin(get_builtin_shader())
-                segments = 32
-                radius = 0.1
+            if prefs.options.show_circle:
+                if self.align_mode == AlignModes.Face.name and self.face_normal and self.loc:
+                    shader = gpu.shader.from_builtin(get_builtin_shader())
+                    segments = 32
+                    radius = prefs.options.circle_size / 10
 
-                up = self.face_normal.normalized()
-                right = up.cross(Vector((0, 0, 1)))
-                if right.length == 0:
-                    right = Vector((1, 0, 0))
-                forward = up.cross(right).normalized()
-                right = up.cross(forward).normalized()
+                    up = self.face_normal.normalized()
+                    right = up.cross(Vector((0, 0, 1)))
+                    if right.length == 0:
+                        right = Vector((1, 0, 0))
+                    forward = up.cross(right).normalized()
+                    right = up.cross(forward).normalized()
 
-                # Generate the center point and the points on the circumference of the circle.
-                center = self.loc
-                circle_points = [
-                    center + radius * (right * math.cos(i * math.tau / segments) + forward * math.sin(i * math.tau / segments))
-                    for i in range(segments + 1)
-                ]
+                    # Generate the center point and the points on the circumference of the circle.
+                    center = self.loc
+                    circle_points = [
+                        center + radius * (right * math.cos(i * math.tau / segments) + forward * math.sin(i * math.tau / segments))
+                        for i in range(segments + 1)
+                    ]
 
-                # Fill Circle
-                fill_coords = [center] + circle_points
-                fill_indices = [(0, i, i + 1) for i in range(1, segments + 1)]
+                    # Fill Circle
+                    fill_coords = [center] + circle_points
+                    fill_indices = [(0, i, i + 1) for i in range(1, segments + 1)]
 
-                batch_fill = batch_for_shader(shader, 'TRIS', {"pos": fill_coords}, indices=fill_indices)
-                shader.bind()
-                shader.uniform_float("color", (1.0, 0.0, 0.0, 0.3))  # 半透明の赤
-                gpu.state.blend_set('ALPHA')
-                batch_fill.draw(shader)
+                    batch_fill = batch_for_shader(shader, 'TRIS', {"pos": fill_coords}, indices=fill_indices)
+                    shader.bind()
+                    shader.uniform_float("color", prefs.options.circle_fill_color)
+                    gpu.state.blend_set('ALPHA')
+                    batch_fill.draw(shader)
 
-                # Border Circle
-                batch_border = batch_for_shader(shader, 'LINE_STRIP', {"pos": circle_points})
-                shader.uniform_float("color", (1.0, 0.0, 0.0, 1.0))  # 不透明な赤
-                batch_border.draw(shader)
+                    # Border Circle
+                    batch_border = batch_for_shader(shader, 'LINE_STRIP', {"pos": circle_points})
+                    shader.uniform_float("color", prefs.options.circle_border_color)
+                    gpu.state.blend_set('ALPHA')
+                    batch_border.draw(shader)
 
             gpu.state.blend_set('NONE')
 
