@@ -188,8 +188,7 @@ class MB_OT_ALIGN_FACE(Operator):
 
         self.s_vertex = prefs.size.s_vertex
 
-        self.c_face_align_dir = prefs.options.normal_color
-        self.c_face_align_dir_org = self.c_face_align_dir
+        self.c_face_align_dir = (*prefs.options.normal_color, 1.0)
         
     def setup_input(self):
         # input management variables
@@ -227,7 +226,7 @@ class MB_OT_ALIGN_FACE(Operator):
             return {'PASS_THROUGH'}
         
         # Cancel
-        if event.type == 'RIGHTMOUSE' and event.value == 'PRESS':
+        if (event.type == 'RIGHTMOUSE' and event.value == 'PRESS') or (event.type == 'ESC' and event.value == 'PRESS'):
             # not needed I think, but doesn't hurt to free the bmesh even if we didn't edit it
             bmesh.update_edit_mesh(self.objdata)
 
@@ -429,7 +428,9 @@ class MB_OT_ALIGN_FACE(Operator):
                 face_normal = normal_world_to_loc(face_normal, self.obj)
             self.loc = loc
 
-            self.c_face_align_dir = self.c_face_align_dir_org
+            prefs = get_prefs()
+            
+            self.c_face_align_dir = (*prefs.options.normal_color, 1.0)
 
             # if aligning to object/world axis            
             axis_normal = self.update_input_Face_Align_Axis()
@@ -720,11 +721,11 @@ class MB_OT_ALIGN_FACE(Operator):
 
         prefs = get_prefs()
 
-        textbox = JDraw_Text_Box_Multi(x=self.mouse_loc[0]+15, y=self.mouse_loc[1]-15, strings=texts, size=prefs.font.main_text_size, text_color=prefs.font.main_text_color)
+        textbox = JDraw_Text_Box_Multi(x=self.mouse_loc[0]+15, y=self.mouse_loc[1]-15, strings=texts, size=prefs.font.main_text_size, text_color=(*prefs.font.main_text_color, 1.0))
         textbox.draw()
         boxheight = abs(textbox.box.height)
 
-        tool_header = JDraw_Text(x=self.mouse_loc[0]+20, y=self.mouse_loc[1]+0, string="Align Face", size=prefs.font.main_text_size, color=prefs.font.main_text_color)
+        tool_header = JDraw_Text(x=self.mouse_loc[0]+20, y=self.mouse_loc[1]+0, string="Align Face", size=prefs.font.main_text_size, color=(*prefs.font.main_text_color, 1.0))
         tool_header.draw()
 
         
@@ -739,10 +740,10 @@ class MB_OT_ALIGN_FACE(Operator):
         if (major == 3):
             offset_v3 = 15
 
-        textbox = JDraw_Text_Box_Multi(x=self.mouse_loc[0]+15, y=self.mouse_loc[1]-boxheight - prefs.font.sub_text_size - 30 - offset_v3, strings=texts, size=prefs.font.sub_text_size, text_color=prefs.font.sub_text_color)
+        textbox = JDraw_Text_Box_Multi(x=self.mouse_loc[0]+15, y=self.mouse_loc[1]-boxheight - prefs.font.sub_text_size - 30 - offset_v3, strings=texts, size=prefs.font.sub_text_size, text_color=(*prefs.font.sub_text_color, 1.0))
         textbox.draw()
 
-        tool_header = JDraw_Text(x=self.mouse_loc[0]+20, y=self.mouse_loc[1]-boxheight - prefs.font.sub_text_size - 20 - offset_v3, string="angle quick adjust", size=prefs.font.sub_text_size, color=prefs.font.sub_text_color)
+        tool_header = JDraw_Text(x=self.mouse_loc[0]+20, y=self.mouse_loc[1]-boxheight - prefs.font.sub_text_size - 20 - offset_v3, string="angle quick adjust", size=prefs.font.sub_text_size, color=(*prefs.font.sub_text_color, 1.0))
         tool_header.draw()
 
         # --------------------------------------------------

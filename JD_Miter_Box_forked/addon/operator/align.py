@@ -122,7 +122,7 @@ class MB_OT_ALIGN(Operator):
             return {'PASS_THROUGH'}
 
         # Cancel
-        if event.type == 'RIGHTMOUSE' and event.value == 'PRESS':
+        if (event.type == 'RIGHTMOUSE' and event.value == 'PRESS')  or (event.type == 'ESC' and event.value == 'PRESS'):
             # not needed I think, but doesn't hurt to free the bmesh even if we didn't edit it
             bmesh.update_edit_mesh(self.objdata)
 
@@ -560,8 +560,8 @@ class MB_OT_ALIGN(Operator):
 
         prefs = get_prefs()
 
-        textbox = JDraw_Text_Box_Multi(x=self.mouse_loc[0]+15, y=self.mouse_loc[1]-15, strings=texts, size=prefs.font.main_text_size, text_color=prefs.font.main_text_color)
+        textbox = JDraw_Text_Box_Multi(x=self.mouse_loc[0]+15, y=self.mouse_loc[1]-15, strings=texts, size=prefs.font.main_text_size, text_color=(*prefs.font.main_text_color, 1.0))
         textbox.draw()
 
-        tool_header = JDraw_Text(x=self.mouse_loc[0]+20, y=self.mouse_loc[1]+0, string="Align Edge", size=prefs.font.main_text_size, color=prefs.font.main_text_color)
+        tool_header = JDraw_Text(x=self.mouse_loc[0]+20, y=self.mouse_loc[1]+0, string="Align Edge", size=prefs.font.main_text_size, color=(*prefs.font.main_text_color, 1.0))
         tool_header.draw()
