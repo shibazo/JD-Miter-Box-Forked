@@ -9,6 +9,8 @@ https://github.com/JohnKazucki/JD-Miter-Box<br />
 - Added circle indicator in Align to Face mode.
 - Added 3D viewport navigation on NDOF devices during Align Edge/Face operations.
 - Removed the alpha setting from the font color of operation text.
+### v0.0.8 restrictions
+- When using the Vulkan backend, line thickness is not reflected.
 
 ## v0.0.7
 - Added user prefrence for font size and color of operation text.
