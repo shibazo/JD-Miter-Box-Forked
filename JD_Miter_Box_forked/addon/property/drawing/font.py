@@ -17,8 +17,8 @@ class BM_Font(bpy.types.PropertyGroup):
         name = "Main Text Color",
         description = "Color of Main Panel text",
         subtype='COLOR',
-        size = 4,
-        default = (1.0, 1.0, 1.0, 1.0),
+        size = 3,
+        default = (1.0, 1.0, 1.0),
         min = 0.0,
         max = 1.0
     )
@@ -34,8 +34,8 @@ class BM_Font(bpy.types.PropertyGroup):
         name = "Sub Text Color",
         description = "Color of Sub Panel text",
         subtype='COLOR',
-        size = 4,
-        default = (1.0, 1.0, 1.0, 1.0),
+        size = 3,
+        default = (1.0, 1.0, 1.0),
         min = 0.0,
         max = 1.0
     )

@@ -7,7 +7,8 @@ import gpu
 from gpu_extras.batch import batch_for_shader
 
 
-from mathutils import Vector
+from mathutils import Vector, Matrix
+import math
 
 from enum import Enum
 import traceback
@@ -187,8 +188,7 @@ class MB_OT_ALIGN_FACE(Operator):
 
         self.s_vertex = prefs.size.s_vertex
 
-
-        self.c_face_align_dir = self.c_selected_geo_sec
+        self.c_face_align_dir = (*prefs.options.normal_color, 1.0)
         
     def setup_input(self):
         # input management variables
@@ -221,12 +221,12 @@ class MB_OT_ALIGN_FACE(Operator):
 
     def modal(self, context, event):
 
-        # Free navigation
-        if event.type in ('MIDDLEMOUSE', 'WHEELUPMOUSE', 'WHEELDOWNMOUSE'):
+        # Free navigation (Mouse and NODF Device (3D Mouse))
+        if (event.type in ('MIDDLEMOUSE', 'WHEELUPMOUSE', 'WHEELDOWNMOUSE')) or (event.type.startswith("NDOF")):
             return {'PASS_THROUGH'}
-
+        
         # Cancel
-        if event.type == 'RIGHTMOUSE' and event.value == 'PRESS':
+        if (event.type == 'RIGHTMOUSE' and event.value == 'PRESS') or (event.type == 'ESC' and event.value == 'PRESS'):
             # not needed I think, but doesn't hurt to free the bmesh even if we didn't edit it
             bmesh.update_edit_mesh(self.objdata)
 
@@ -428,7 +428,9 @@ class MB_OT_ALIGN_FACE(Operator):
                 face_normal = normal_world_to_loc(face_normal, self.obj)
             self.loc = loc
 
-            self.c_face_align_dir = self.c_selected_geo_sec
+            prefs = get_prefs()
+            
+            self.c_face_align_dir = (*prefs.options.normal_color, 1.0)
 
             # if aligning to object/world axis            
             axis_normal = self.update_input_Face_Align_Axis()
@@ -596,7 +598,45 @@ class MB_OT_ALIGN_FACE(Operator):
                 dir = normal_loc_to_world(self.face_normal, self.obj) * 0.1
                 start = mouse_2d_to_3d(context, self.mouse_loc)
             
-            line_p2p(start, start+dir, 2, self.c_face_align_dir)
+            prefs = get_prefs()
+            line_p2p(start, start+dir, prefs.options.normal_size, self.c_face_align_dir)
+
+            # Draw a circle aligned with the normal.(Face Aline Mode)
+            if prefs.options.show_circle:
+                if self.align_mode == AlignModes.Face.name and self.face_normal and self.loc:
+                    shader = gpu.shader.from_builtin(get_builtin_shader())
+                    segments = 32
+                    radius = prefs.options.circle_size / 10
+
+                    up = self.face_normal.normalized()
+                    right = up.cross(Vector((0, 0, 1)))
+                    if right.length == 0:
+                        right = Vector((1, 0, 0))
+                    forward = up.cross(right).normalized()
+                    right = up.cross(forward).normalized()
+
+                    # Generate the center point and the points on the circumference of the circle.
+                    center = self.loc
+                    circle_points = [
+                        center + radius * (right * math.cos(i * math.tau / segments) + forward * math.sin(i * math.tau / segments))
+                        for i in range(segments + 1)
+                    ]
+
+                    # Fill Circle
+                    fill_coords = [center] + circle_points
+                    fill_indices = [(0, i, i + 1) for i in range(1, segments + 1)]
+
+                    batch_fill = batch_for_shader(shader, 'TRIS', {"pos": fill_coords}, indices=fill_indices)
+                    shader.bind()
+                    shader.uniform_float("color", prefs.options.circle_fill_color)
+                    gpu.state.blend_set('ALPHA')
+                    batch_fill.draw(shader)
+
+                    # Border Circle
+                    batch_border = batch_for_shader(shader, 'LINE_STRIP', {"pos": circle_points})
+                    shader.uniform_float("color", prefs.options.circle_border_color)
+                    gpu.state.blend_set('ALPHA')
+                    batch_border.draw(shader)
 
             gpu.state.blend_set('NONE')
 
@@ -681,11 +721,11 @@ class MB_OT_ALIGN_FACE(Operator):
 
         prefs = get_prefs()
 
-        textbox = JDraw_Text_Box_Multi(x=self.mouse_loc[0]+15, y=self.mouse_loc[1]-15, strings=texts, size=prefs.font.main_text_size, text_color=prefs.font.main_text_color)
+        textbox = JDraw_Text_Box_Multi(x=self.mouse_loc[0]+15, y=self.mouse_loc[1]-15, strings=texts, size=prefs.font.main_text_size, text_color=(*prefs.font.main_text_color, 1.0))
         textbox.draw()
         boxheight = abs(textbox.box.height)
 
-        tool_header = JDraw_Text(x=self.mouse_loc[0]+20, y=self.mouse_loc[1]+0, string="Align Face", size=prefs.font.main_text_size, color=prefs.font.main_text_color)
+        tool_header = JDraw_Text(x=self.mouse_loc[0]+20, y=self.mouse_loc[1]+0, string="Align Face", size=prefs.font.main_text_size, color=(*prefs.font.main_text_color, 1.0))
         tool_header.draw()
 
         
@@ -700,10 +740,10 @@ class MB_OT_ALIGN_FACE(Operator):
         if (major == 3):
             offset_v3 = 15
 
-        textbox = JDraw_Text_Box_Multi(x=self.mouse_loc[0]+15, y=self.mouse_loc[1]-boxheight - prefs.font.sub_text_size - 30 - offset_v3, strings=texts, size=prefs.font.sub_text_size, text_color=prefs.font.sub_text_color)
+        textbox = JDraw_Text_Box_Multi(x=self.mouse_loc[0]+15, y=self.mouse_loc[1]-boxheight - prefs.font.sub_text_size - 30 - offset_v3, strings=texts, size=prefs.font.sub_text_size, text_color=(*prefs.font.sub_text_color, 1.0))
         textbox.draw()
 
-        tool_header = JDraw_Text(x=self.mouse_loc[0]+20, y=self.mouse_loc[1]-boxheight - prefs.font.sub_text_size - 20 - offset_v3, string="angle quick adjust", size=prefs.font.sub_text_size, color=prefs.font.sub_text_color)
+        tool_header = JDraw_Text(x=self.mouse_loc[0]+20, y=self.mouse_loc[1]-boxheight - prefs.font.sub_text_size - 20 - offset_v3, string="angle quick adjust", size=prefs.font.sub_text_size, color=(*prefs.font.sub_text_color, 1.0))
         tool_header.draw()
 
         # --------------------------------------------------

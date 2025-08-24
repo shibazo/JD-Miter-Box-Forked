@@ -4,9 +4,21 @@ The Original addon is here:<br />
 https://github.com/JohnKazucki/JD-Miter-Box<br />
 
 # Abount change from original addon<br />
-v0.0.6 Updated use GPU module instead of BGL module.<br />
-v0.0.7 Added Font size and color settings.
-<br /><br />
+## v0.0.8
+- Added user prefrence for Normal color and size in Align to Face mode.
+- Added circle indicator in Align to Face mode.
+- Added 3D viewport navigation on NDOF devices during Align Edge/Face operations.
+- Removed the alpha setting from the font color of operation text.
+### v0.0.8 restrictions
+- When using the Vulkan backend, line thickness is not reflected.
+
+## v0.0.7
+- Added user prefrence for font size and color of operation text.
+
+## v0.0.6
+- Updated use GPU module instead of BGL module.
+<br />
+<br />
 
 # Miter Box
 
