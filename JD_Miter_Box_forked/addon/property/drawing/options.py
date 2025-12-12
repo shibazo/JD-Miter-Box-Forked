@@ -4,6 +4,7 @@ from bpy.props import IntProperty
 
 from mathutils import Vector
 
+
 class BM_Options(bpy.types.PropertyGroup):
     #
     normal_size: bpy.props.IntProperty(

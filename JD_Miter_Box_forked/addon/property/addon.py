@@ -4,11 +4,11 @@ from bpy.props import PointerProperty
 
 from ..utility.addon import addon_name, get_prefs
 
-
 from .drawing.color import BM_Color, draw_color
 from .drawing.size import BM_Size, draw_size
 from .drawing.font import BM_Font, draw_font
 from .drawing.options import BM_Options, draw_options
+
 
 class BM_Props(bpy.types.AddonPreferences):
     bl_idname = addon_name

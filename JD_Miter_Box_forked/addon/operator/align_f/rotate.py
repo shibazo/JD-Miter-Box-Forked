@@ -3,7 +3,6 @@ import bpy
 from ...utility.math import rotate_point_around_axis
 
 
-
 def rotate_verts(verts, angle, rot_axis, rot_edge):
 
     new_point_coors = []
@@ -32,7 +31,6 @@ def rotate_normals(normals, angle, rot_axis):
         new_normals.append(new_normal)
 
     return new_normals
-
 
 def fix_rot_dir(verts, rot_axis, rot_edge, normal):
     verts = [v for v in verts if v not in rot_edge]

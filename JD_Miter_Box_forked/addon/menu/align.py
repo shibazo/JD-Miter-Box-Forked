@@ -4,8 +4,6 @@ from bpy.types import Panel, Menu
 
 from .classes import MB_PT_VIEW_3D
 
-
-
 class MB_PT_ALIGN(MB_PT_VIEW_3D, Panel):
     bl_label = "MiterBox"
 
@@ -20,7 +18,6 @@ class MB_PT_ALIGN(MB_PT_VIEW_3D, Panel):
         row.operator("object.mb_align_face", icon='AXIS_SIDE')
 
 
-
 # Edit Mode RMB menu, based on LoopTools
 class VIEW3D_MB_MT_edit_mesh_MiterBox(Menu):
     bl_label = "MiterBox"
@@ -31,7 +28,6 @@ class VIEW3D_MB_MT_edit_mesh_MiterBox(Menu):
         layout.operator("object.mb_align", icon='SNAP_EDGE')
 
         layout.operator("object.mb_align_face", icon='AXIS_SIDE')
-
 
 
 # draw function for integration in menus, based on LoopTools

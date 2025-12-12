@@ -34,7 +34,7 @@ from ...utility.drawing.view import mouse_2d_to_3d
 from ...utility.drawing.tool_tip import build_tooltips
 from ...utility.jdraw.core import JDraw_Text_Box_Multi, JDraw_Text
 
-from ...utility.shader_utils import get_builtin_shader
+from ...utility.shader_utils import get_builtin_shader_for_primitive
 
 theme = bpy.context.preferences.themes[0]
 B_ui = theme.user_interface
@@ -78,6 +78,7 @@ Align_Face_kb_anglemod = {
                             {'key':'P', 'desc':"Angle + 45"},
 } 
 
+
 class AlignModes(Enum):
     Face = 0
     X_Object = 1
@@ -87,14 +88,17 @@ class AlignModes(Enum):
     Z_Object = 5
     Z_World = 6
 
+
 class SlideProjectMode(Enum):
     Base = 0
     Target = 1
+
 
 Align_Face_kb_slideprojectmode = {
                         'SlideDir' :
                             {'key':'N', 'desc':"Projection Direction", 'var':'slideproj_mode'},
 }
+
 
 Align_Face_kb_snapping = {
                         'snapping' :
@@ -102,7 +106,6 @@ Align_Face_kb_snapping = {
                         # 'absolute' :
                         #     {'key':'Alt', 'desc':"Absolute", 'var':'snap_abs'},
 }
-
 
 
 class MB_OT_ALIGN_FACE(Operator):
@@ -261,14 +264,12 @@ class MB_OT_ALIGN_FACE(Operator):
                     self.snapping = False
                 else:
                     self.snapping = True
-                    
 
         # Cycle modes
         if event.type == Align_Face_kb_general['mode']['key'] and event.value == 'PRESS':
             self.mode_index += 1
             self.mode_index %= len(Modes)
             self.mode = Modes(self.mode_index).name
-
 
         # Projection/Slide mode
         if self.mode == Modes.Project.name or self.mode == Modes.Slide.name:
@@ -337,7 +338,6 @@ class MB_OT_ALIGN_FACE(Operator):
         if self.modify == Modify.Align_Face.value:
             self.update_Face_Align_Axis(event)
 
-
         self.update_input(context)
         self.update()
 
@@ -376,7 +376,6 @@ class MB_OT_ALIGN_FACE(Operator):
             return self.align_mode
         else:
             return text.format(type=parts[1], axis=parts[0])
-
 
     def update(self):
         if self.mode == Modes.Rotate.name:
@@ -492,11 +491,8 @@ class MB_OT_ALIGN_FACE(Operator):
 
         return face_normal
     # ------------------------------
-        
-
 
     # -- SHADERS
-
     def remove_shaders(self, context):
         '''Remove shader handle.'''
 
@@ -508,7 +504,6 @@ class MB_OT_ALIGN_FACE(Operator):
             self.draw_UI_handle = bpy.types.SpaceView3D.draw_handler_remove(self.draw_UI_handle, "WINDOW")
             context.area.tag_redraw()
 
-
     def safe_draw_shader_3d(self, context):
 
         try:
@@ -519,9 +514,10 @@ class MB_OT_ALIGN_FACE(Operator):
             self.remove_shaders(context)
 
     def draw_shaders_3d(self, context):
+        region = bpy.context.region
+        viewport_size = (region.width, region.height)
         
         # selection size
-
         coors = [v.co for v in self.selected_edge_verts]
 
         coors_x = [coor[0] for coor in coors]
@@ -565,7 +561,6 @@ class MB_OT_ALIGN_FACE(Operator):
                 self.slide_edges.append(pos + (self.slide_dirs[index]*0.1*gizmo_size))
             
             # slide edges
-
             coors = self.slide_edges
             world_coors = coors_loc_to_world(coors, self.obj)
             edges(world_coors, 1, self.c_preview_geo)
@@ -583,7 +578,6 @@ class MB_OT_ALIGN_FACE(Operator):
 
 
         # face normal or axis aligned normal
-
         if self.modify == Modify.Align_Face.value:
             gpu.state.blend_set('ALPHA')
 
@@ -604,7 +598,6 @@ class MB_OT_ALIGN_FACE(Operator):
             # Draw a circle aligned with the normal.(Face Aline Mode)
             if prefs.options.show_circle:
                 if self.align_mode == AlignModes.Face.name and self.face_normal and self.loc:
-                    shader = gpu.shader.from_builtin(get_builtin_shader())
                     segments = 32
                     radius = prefs.options.circle_size / 10
 
@@ -626,41 +619,38 @@ class MB_OT_ALIGN_FACE(Operator):
                     fill_coords = [center] + circle_points
                     fill_indices = [(0, i, i + 1) for i in range(1, segments + 1)]
 
+                    shader = gpu.shader.from_builtin(get_builtin_shader_for_primitive('TRIS'))
                     batch_fill = batch_for_shader(shader, 'TRIS', {"pos": fill_coords}, indices=fill_indices)
                     shader.bind()
                     shader.uniform_float("color", prefs.options.circle_fill_color)
-                    gpu.state.blend_set('ALPHA')
                     batch_fill.draw(shader)
 
                     # Border Circle
-                    batch_border = batch_for_shader(shader, 'LINE_STRIP', {"pos": circle_points})
-                    shader.uniform_float("color", prefs.options.circle_border_color)
-                    gpu.state.blend_set('ALPHA')
-                    batch_border.draw(shader)
+                    shader_circle = gpu.shader.from_builtin(get_builtin_shader_for_primitive('LINE_STRIP'))
+                    batch_border = batch_for_shader(shader_circle, 'LINE_STRIP', {"pos": circle_points})
+                    shader_circle.bind()
+                    shader_circle.uniform_float("color", prefs.options.circle_border_color)
+                    shader_circle.uniform_float("lineWidth", 1)
+                    shader_circle.uniform_float("viewportSize", viewport_size)
+                    batch_border.draw(shader_circle)
 
             gpu.state.blend_set('NONE')
 
         # rotation axis
-
-        gpu.state.line_width_set(3)
-
         coors = [v.co for v in self.rot_edge]
         world_coors = coors_loc_to_world(coors, self.obj)
 
-        shader_moving_lines = gpu.shader.from_builtin(get_builtin_shader())
+        shader_moving_lines = gpu.shader.from_builtin(get_builtin_shader_for_primitive('LINES'))
         batch_moving_lines = batch_for_shader(shader_moving_lines, 'LINES', {"pos": world_coors})
 
         shader_moving_lines.bind()
         shader_moving_lines.uniform_float("color", self.c_active_geo)
+        shader_moving_lines.uniform_float("lineWidth", 3)
+        shader_moving_lines.uniform_float("viewportSize", viewport_size)
         batch_moving_lines.draw(shader_moving_lines)
-
-        gpu.state.line_width_set(1)
-
         # --------------------------------------------------
 
-
         # angle arc
-
         axis_z = normal_loc_to_world(self.normal, self.obj)
         axis_x = normal_loc_to_world(self.rot_axis, self.obj)
         axis_y = axis_z.cross(axis_x)
@@ -673,9 +663,6 @@ class MB_OT_ALIGN_FACE(Operator):
         center = coor_loc_to_world(center, self.obj)
 
         arc(center, axis_x, axis_y, axis_z, gizmo_size, self.angle, 2, self.c_selected_geo)
-
-
-
 
     def safe_draw_shader_2d(self, context):
 
@@ -745,13 +732,10 @@ class MB_OT_ALIGN_FACE(Operator):
 
         tool_header = JDraw_Text(x=self.mouse_loc[0]+20, y=self.mouse_loc[1]-boxheight - prefs.font.sub_text_size - 20 - offset_v3, string="angle quick adjust", size=prefs.font.sub_text_size, color=(*prefs.font.sub_text_color, 1.0))
         tool_header.draw()
-
         # --------------------------------------------------
-
 
         # interaction UI
         if self.modify == Modify.Angle.value:
             line_2d(self.start_loc, Vector((self.mouse_loc[0], self.start_loc[1])), 2, self.c_selected_geo_sec)
-
 
     # ------------------------------

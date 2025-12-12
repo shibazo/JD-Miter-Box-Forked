@@ -16,7 +16,6 @@ def register_operators():
     for cls in classes:
         register_class(cls)
 
-
 def unregister_operators():
     from bpy.utils import unregister_class
     for cls in reversed(classes):

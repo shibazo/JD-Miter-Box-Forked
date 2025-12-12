@@ -11,7 +11,6 @@ class BM_Size(bpy.types.PropertyGroup):
         name = "Vertex Size", description = "How big vertices are drawn in tools. \nBoth selected and preview vertices",
         subtype = 'PIXEL', default = 5, min = 1, soft_max = 30
     )
-
     
     
 size_prefs = [{'s_vertex': "Size of vertices"},

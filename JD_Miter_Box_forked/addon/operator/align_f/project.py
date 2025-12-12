@@ -7,6 +7,7 @@ from ...utility.math import rotate_point_around_axis
 
 from collections import OrderedDict
 
+
 def project_verts(verts, angle, pivot, rot_axis, normal, directions=[], project_override=None):
 
     new_point_coors = []
