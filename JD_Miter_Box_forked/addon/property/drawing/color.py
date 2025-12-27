@@ -42,7 +42,6 @@ class BM_Color(bpy.types.PropertyGroup):
         size = 4, min = 0.0, max = 1.0,
         subtype='COLOR', default=(.6, 0.0, .2, .7)
     )
-
     
     
 color_prefs = [{'c_preview_geo': "Preview Geometry"}, 

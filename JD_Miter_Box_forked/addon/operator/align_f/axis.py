@@ -5,6 +5,7 @@ from bpy_extras.view3d_utils import location_3d_to_region_2d
 from ...utility.mesh import coors_loc_to_world
 from ...utility.math import distance_point_to_edge_2d
 
+
 def update_axis(self, context):
     region = context.region
     rv3d = bpy.context.space_data.region_3d

@@ -17,8 +17,7 @@ from mathutils import Vector
 from mathutils.geometry import intersect_line_line
 
 from ..utility.mesh import vert_pair_other_vert, coor_loc_to_world, coors_loc_to_world
-
-from ..utility.shader_utils import get_builtin_shader
+from ..utility.shader_utils import get_builtin_shader_for_primitive
 
 Align_kb_general = {'mode' :
     {'key':'V', 'desc':"Mode", 'var':'mode'},
@@ -414,22 +413,23 @@ class MB_OT_ALIGN(Operator):
         if self.error:
             slide_edge_color = c_error_geo_sec
 
+        region = bpy.context.region
+        viewport_size = (region.width, region.height)
+
         # LINES
         # active edge, the guide edge
-
-        gpu.state.line_width_set(3)
 
         coors = [vert.co for vert in self.edge_active]
         world_coors = coors_loc_to_world(coors, self.obj)
 
-        shader = gpu.shader.from_builtin(get_builtin_shader())
+        shader = gpu.shader.from_builtin(get_builtin_shader_for_primitive('LINES'))
         batch = batch_for_shader(shader, 'LINES', {"pos": world_coors})
 
         shader.bind()
         shader.uniform_float("color", para_edge_color)
+        shader.uniform_float("lineWidth", 3)
+        shader.uniform_float("viewportSize", viewport_size)
         batch.draw(shader)
-
-        gpu.state.line_width_set(1)
 
         # LINES
         # selected edge, will be made parallel
@@ -437,22 +437,29 @@ class MB_OT_ALIGN(Operator):
         coors = [vert.co for vert in self.edge_selected]
         world_coors = coors_loc_to_world(coors, self.obj)
 
-        shader_active = gpu.shader.from_builtin(get_builtin_shader())
+        shader_active = gpu.shader.from_builtin(get_builtin_shader_for_primitive('LINES'))
         batch_active = batch_for_shader(shader_active, 'LINES', {"pos": world_coors})
 
         shader_active.bind()
         shader_active.uniform_float("color", c_selected_geo)
+        shader_active.uniform_float("lineWidth", 1)
+        shader_active.uniform_float("viewportSize", viewport_size)
         batch_active.draw(shader_active)
 
 
         # POINT
         # point of selected edge that will be moved to make the edge parallel
 
-        gpu.state.point_size_set(10)
+        gpu.state.point_size_set(prefs.size.s_vertex)
 
         world_coors = coor_loc_to_world(self.closest_active_vert.co, self.obj)
 
-        shader_dots = gpu.shader.from_builtin(get_builtin_shader())
+        version = bpy.app.version
+        if version >= (4, 5, 0):
+            shader_dots = gpu.shader.from_builtin('POINT_UNIFORM_COLOR')
+        else:
+            shader_dots = gpu.shader.from_builtin(get_builtin_shader_for_primitive('POINTS'))
+
         batch_dots = batch_for_shader(shader_dots, 'POINTS', {"pos": [world_coors]})
 
         shader_dots.bind()
@@ -468,30 +475,28 @@ class MB_OT_ALIGN(Operator):
 
             world_coors = coors_loc_to_world(self.moving_lines, self.obj)
 
-
-            shader_moving_lines = gpu.shader.from_builtin(get_builtin_shader())
+            shader_moving_lines = gpu.shader.from_builtin(get_builtin_shader_for_primitive('LINES'))
             batch_moving_lines = batch_for_shader(shader_moving_lines, 'LINES', {"pos": world_coors})
 
             shader_moving_lines.bind()
             shader_moving_lines.uniform_float("color", c_selected_geo_sec)
+            shader_moving_lines.uniform_float("lineWidth", 1)
+            shader_moving_lines.uniform_float("viewportSize", viewport_size)
             batch_moving_lines.draw(shader_moving_lines)
-
 
             # LINES
             # active guide edge, along which edge will be moved to make it parallel
 
-            gpu.state.line_width_set(2)
-
             world_coors = coors_loc_to_world(self.guide_edge, self.obj)
 
-            shader_moving_lines = gpu.shader.from_builtin(get_builtin_shader())
+            shader_moving_lines = gpu.shader.from_builtin(get_builtin_shader_for_primitive('LINES'))
             batch_moving_lines = batch_for_shader(shader_moving_lines, 'LINES', {"pos": world_coors})
 
             shader_moving_lines.bind()
             shader_moving_lines.uniform_float("color", slide_edge_color)
+            shader_moving_lines.uniform_float("lineWidth", 2)
+            shader_moving_lines.uniform_float("viewportSize", viewport_size)
             batch_moving_lines.draw(shader_moving_lines)
-
-            gpu.state.line_width_set(1)
 
 
         if not self.error:
@@ -501,11 +506,13 @@ class MB_OT_ALIGN(Operator):
 
             world_coors = coors_loc_to_world(self.new_edge, self.obj)
 
-            shader_moving_lines = gpu.shader.from_builtin(get_builtin_shader())
+            shader_moving_lines = gpu.shader.from_builtin(get_builtin_shader_for_primitive('LINES'))
             batch_moving_lines = batch_for_shader(shader_moving_lines, 'LINES', {"pos": world_coors})
 
             shader_moving_lines.bind()
             shader_moving_lines.uniform_float("color", (1, 1, 1, 1.0))
+            shader_moving_lines.uniform_float("lineWidth", 1)
+            shader_moving_lines.uniform_float("viewportSize", viewport_size)
             batch_moving_lines.draw(shader_moving_lines)
 
 
@@ -514,9 +521,13 @@ class MB_OT_ALIGN(Operator):
 
             world_coors = coor_loc_to_world(self.new_vert_loc, self.obj)
 
-            gpu.state.point_size_set(10)
+            gpu.state.point_size_set(prefs.size.s_vertex)
 
-            shader_dots = gpu.shader.from_builtin(get_builtin_shader())
+            if version >= (4, 5, 0):
+                shader_dots = gpu.shader.from_builtin('POINT_UNIFORM_COLOR')
+            else:
+                shader_dots = gpu.shader.from_builtin(get_builtin_shader_for_primitive('POINTS'))
+
             batch_dots = batch_for_shader(shader_dots, 'POINTS', {"pos": [world_coors]})
 
             shader_dots.bind()

@@ -4,6 +4,7 @@ from bpy.props import IntProperty
 
 from mathutils import Vector
 
+
 class BM_Font(bpy.types.PropertyGroup):
     # 
     main_text_size: bpy.props.IntProperty(

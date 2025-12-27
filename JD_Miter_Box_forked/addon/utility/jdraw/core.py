@@ -43,14 +43,9 @@ class JDraw_UI:
     def coorY(self, coor):
         '''Set Y coordinate'''
         self.y = coor
-
-
 # -------------------------------------------
 
-
-
 # --- COMPONENT CLASSES
-
 class JDraw_Text(JDraw_UI):
 
     def __init__(self, x=0, y=0, string="default", size=12, color=(1, 1, 1, 1)) -> None:
@@ -89,7 +84,6 @@ class JDraw_Text(JDraw_UI):
         # font shadow disable
         blf.disable(0, blf.SHADOW)
 
-
     # from ST3 course part 5-8
     @property #getter
     def size(self):
@@ -102,7 +96,6 @@ class JDraw_Text(JDraw_UI):
         return blf.dimensions(0, str(self.string))
 
 
-
 class JDraw_Rect(JDraw_UI):
 
     def __init__(self, x=0, y=0, width=100, height=50, color=(0,0,0,.5)) -> None:
@@ -113,11 +106,9 @@ class JDraw_Rect(JDraw_UI):
         self.height = height
         self.color = color
 
-
     def draw(self):
         verts = make_vertices(self.x, self.y, self.width, self.height)
         draw_quad(vertices=verts, color=self.color)
-
 
     @property # getter
     def size(self):
@@ -130,12 +121,10 @@ class JDraw_Rect(JDraw_UI):
         self.width = coors[0]
         self.height = coors[1]
 
-
 # -------------------------------------------
 
 
 # --- COMPOSITE CLASSES
-
 class JDraw_Text_Box:
     def __init__(self, x=0, y=0, box_color=(0,0,0,.5), padding=8, 
                 string="default", size=12, text_color=(1, 1, 1, 1)):
@@ -150,11 +139,9 @@ class JDraw_Text_Box:
 
         self.box = JDraw_Rect(x=x, y=y, width=box_width, height=box_height)
 
-
     def draw(self):
         self.box.draw()
         self.text.draw()
-
 
     @property # getter
     def coor(self):
@@ -167,7 +154,6 @@ class JDraw_Text_Box:
         self.box.coor = coors
         coors = [x+self.padding for x in coors]
         self.text.coor = coors
-
 
 
 class JDraw_Text_Box_Multi:
@@ -206,12 +192,10 @@ class JDraw_Text_Box_Multi:
 
         self.box = JDraw_Rect(x=x, y=y, width=box_width, height=-box_height)
 
-
     def draw(self):
         self.box.draw()
         for text in self.texts:
             text.draw()
-
 
     @property # getter
     def coor(self):
@@ -224,6 +208,5 @@ class JDraw_Text_Box_Multi:
         self.box.coor = coors
         coors = [x+self.padding for x in coors]
         self.text.coor = coors
-
 
 # -------------------------------------------

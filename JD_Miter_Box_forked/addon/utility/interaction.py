@@ -2,7 +2,6 @@ import bpy
 from bpy_extras import view3d_utils
 
 
-
 def face_normal_cursor(mouse_loc, context):
 
     region = context.region
@@ -15,7 +14,6 @@ def face_normal_cursor(mouse_loc, context):
 
     # raycast to face
     # get normal
-
 
     depsgraph = context.evaluated_depsgraph_get()
     result, loc, norm_ws, index, obj, matrix = context.scene.ray_cast(depsgraph, ray_origin, view_vector)

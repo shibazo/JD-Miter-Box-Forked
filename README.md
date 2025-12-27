@@ -4,6 +4,10 @@ The Original addon is here:<br />
 https://github.com/JohnKazucki/JD-Miter-Box<br />
 
 # Abount change from original addon<br />
+## v0.0.9
+- Chenged Supported Blender version 4.2 LTS higher only.
+- Fixed an issue where line thickness were not being applied when using the Vulkan backend. 
+
 ## v0.0.8
 - Added user prefrence for Normal color and size in Align to Face mode.
 - Added circle indicator in Align to Face mode.

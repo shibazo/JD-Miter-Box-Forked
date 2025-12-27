@@ -1,10 +1,9 @@
 import bpy, blf, gpu
 from gpu_extras.batch import batch_for_shader
 
-from ..shader_utils import get_builtin_shader, get_builtin_shader_2d
+from ..shader_utils import get_builtin_shader_for_primitive
 
 # --- PRIMITIVE DRAWING
-
 def object_coor3d_to_2d(context, object_location):
     from bpy_extras.view3d_utils import location_3d_to_region_2d
 
@@ -34,7 +33,7 @@ def draw_quad(vertices=[], color=(1,1,1,1)):
     '''Vertices = Top Left, Bottom Left, Top Right, Bottom Right'''
 
     indices = [(0, 1, 2), (1, 2, 3)]
-    shader = gpu.shader.from_builtin(get_builtin_shader_2d())
+    shader = gpu.shader.from_builtin(get_builtin_shader_for_primitive('TRIS'))
     batch = batch_for_shader(shader, 'TRIS', {"pos": vertices}, indices=indices)
     shader.bind()
     shader.uniform_float("color", color)
@@ -45,12 +44,9 @@ def draw_quad(vertices=[], color=(1,1,1,1)):
     del shader
     del batch
 
-
 # -------------------------------------------
 
-
 # --- FORMATTING
-
 def format_and_append(textlist, inputlist):
     for entry in inputlist:
         formattype = entry[1]
